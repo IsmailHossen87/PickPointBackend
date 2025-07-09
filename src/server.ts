@@ -1,15 +1,17 @@
+/* eslint-disable no-console */
 import mongoose from "mongoose";
 import { Server } from "http"
 import app from "./app";
 import { envVars } from "./app/config/env";
-const port = 5000
+
+
 let server: Server;
 
 const startServer = async () => {
    try {
       await mongoose.connect(envVars.DB_URL)
       console.log("Connect to db")
-      server = app.listen(port, () => {
+      server = app.listen(envVars.Port, () => {
          console.log("Server is running")
       })
    } catch (error) {
@@ -48,6 +50,7 @@ process.on("SIGTERM", () => {
    }
    process.exit(1)
 })
+
 // Sigtram  Exception error
 process.on("SIGINT", () => {
    console.log("SIGINT signal   recieved... Server shutting down.")
