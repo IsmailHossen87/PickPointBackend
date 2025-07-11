@@ -9,14 +9,14 @@ import { sendResponse } from "../../utils/sendReponse";
 
 
 const createUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const user = await userService.createUser(req.body)
+  const user = await userService.createUser(req.body)
 
-    sendResponse(res,{
-       success:true,
-      statusCode:httpStatus.CREATED,
-      message:"User created sucessfully",
-      data :user
-    })
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.CREATED,
+    message: "User created sucessfully",
+    data: user
+  })
 })
 
 
@@ -28,13 +28,13 @@ const AllUsers = catchAsync(async (req: Request, res: Response, next: NextFuncti
   //   message: "All Users Retrieved Successfully",
   //   data: users,
   // });
-     sendResponse(res,{
-       success:true,
-      statusCode:httpStatus.CREATED,
-      message:"All Users Retrived sucessfully",
-      data :result.data,
-      meta :result.meta
-    })
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.CREATED,
+    message: "All Users Retrived sucessfully",
+    data: result.data,
+    meta: result.meta
+  })
 
 });
 

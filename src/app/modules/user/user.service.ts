@@ -6,14 +6,16 @@ import bcryptjs from "bcryptjs"
 
 const createUser =async(payload : Partial<Iuser>) =>{ 
      const {email,password,...rest} = payload;
-     const isUserExites = await User.findOne({email})
 
+
+     const isUserExites = await User.findOne({email})
      if(isUserExites){
         throw new AppError(httpStatus.BAD_REQUEST,"User Already Exit")
      }
-      
+    //  for password
      const hashePassword =await bcryptjs.hash(password as string,10 )
 
+    //  for authProvider
      const AuthProvider: IAuthProvider= {provider:"credentials",providerId:email as string}
 
         const user = await User.create({
