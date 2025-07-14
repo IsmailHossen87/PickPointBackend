@@ -5,37 +5,54 @@ import { userService } from "./user.service";
 import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendReponse";
 
+import { envVars } from "../../config/env";
+import { verifyToken } from "../../utils/jwt";
+import { JwtPayload } from "jsonwebtoken";
 
 
 
 const createUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const user = await userService.createUser(req.body)
+  const user = await userService.createUser(req.body)
 
-    sendResponse(res,{
-       success:true,
-      statusCode:httpStatus.CREATED,
-      message:"User created sucessfully",
-      data :user
-    })
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.CREATED,
+    message: "User created sucessfully",
+    data: user
+  })
 })
 
 
 const AllUsers = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
   const result = await userService.getAllUsers();
 
-  // res.status(httpStatus.OK).json({
-  //   success: true,
-  //   message: "All Users Retrieved Successfully",
-  //   data: users,
-  // });
-     sendResponse(res,{
-       success:true,
-      statusCode:httpStatus.CREATED,
-      message:"All Users Retrived sucessfully",
-      data :result.data,
-      meta :result.meta
-    })
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.CREATED,
+    message: "All Users Retrived sucessfully",
+    data: result.data,
+    meta: result.meta
+  })
 
 });
 
-export const UserControllers = { createUser, AllUsers }
+const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+  const userId = req.params.id;
+  // const token = req.headers.authorization;
+  // const verifyedToken = verifyToken(token as string,envVars.JWT_ACCESS_SECRET) as JwtPayload
+
+  const verifyedToken = req.user
+  const payload = req.body
+
+  const user = await userService.updateUser(userId,payload,verifyedToken)
+
+  sendResponse(res, {
+    success: true,
+    statusCode: httpStatus.CREATED,
+    message: "User updated sucessfully",
+    data: user
+  })
+})
+
+
+export const UserControllers = { createUser, AllUsers,updateUser }

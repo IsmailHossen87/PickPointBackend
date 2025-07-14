@@ -1,9 +1,24 @@
-import { Router } from "express";
+
 import { UserControllers } from "./user.controler";
 
-const router =Router()
-router.post("/register",UserControllers.createUser)
-router.get("/allUsers",UserControllers.AllUsers)
+import { createUserZodSchema, updateUserZodSchema } from "./user.validation";
+import { validateRequest } from "../../middleware/validateRequest";
+import { Router } from "express";
+import { Role } from "./user.interface";
+import { checkAuth } from "../../middleware/checkAuth";
+
+
+
+const router = Router()
+
+
+// Zod validation
+router.post("/register", validateRequest(createUserZodSchema), UserControllers.createUser)
+
+// accessToken
+router.get("/allUsers", checkAuth(Role.ADMIN,Role.SUPER_ADMIN),UserControllers.AllUsers)
+// as if all person can update so use spreed Oparetor
+router.patch("/:id",validateRequest(updateUserZodSchema), checkAuth(...Object.values(Role)),UserControllers.updateUser)
 
 
 // উপরে router er name এর condition টা ঠীক রাখার জন্য
