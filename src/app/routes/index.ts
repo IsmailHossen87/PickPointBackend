@@ -6,6 +6,7 @@ export const router = Router()
 
 const moduleRoutes = [
     { path:"/user",route : UserRoutes },
+    // for login,register etc
     { path:"/auth",route : AuthRoutes }
 ]
 
