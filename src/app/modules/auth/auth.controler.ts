@@ -7,6 +7,7 @@ import AppError from "../../errorHalper/App.Error"
 import { setAuthCookie } from "../../utils/setCookie"
 import { createUserToken } from "../../utils/userToken"
 import { envVars } from "../../config/env"
+import { JwtPayload } from "jsonwebtoken"
 
 
 
@@ -15,8 +16,6 @@ const credentialLogin = catchAsync(async (req: Request, res: Response, next: Nex
     const loginInfo = await AuthService.credentialLogin(req.body)
     // link
     setAuthCookie(res, loginInfo)
-
-
     sendResponse(res, {
         success: true,
         statusCode: httpStatus.OK,
@@ -65,15 +64,32 @@ const logout = catchAsync(async (req: Request, res: Response, next: NextFunction
         data: null,
     })
 })
-// For LogOut
+// reset
+const resetPassword = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const newPassword = req.body.newPassword;
+    const oldPassword = req.body.oldPassword;
+    const decodedToken = req.user;
+
+    await AuthService.resetPassword(oldPassword, newPassword, decodedToken as JwtPayload);
+
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "Password Changed Successfully",
+        data: null,
+    })
+})
+
+// For google
 const googleCallbackController = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
     const user = req.user; 
-    if(!user){
-        throw new AppError(httpStatus.NOT_FOUND,"User Not Found")
+    console.log("user",user)
+    if (!user) {
+        throw new AppError(httpStatus.NOT_FOUND, "User Not Found")
     }
     const tokenInfo = await createUserToken(user)
-    setAuthCookie(res,tokenInfo)
+    setAuthCookie(res, tokenInfo)
 
     res.redirect(envVars.FRONTEND_URL)
 
@@ -81,4 +97,4 @@ const googleCallbackController = catchAsync(async (req: Request, res: Response, 
 
 
 
-export const AuthControler = { credentialLogin, getNewAccessToken,logout,googleCallbackController }
+export const AuthControler = { credentialLogin, getNewAccessToken, logout, googleCallbackController ,resetPassword}

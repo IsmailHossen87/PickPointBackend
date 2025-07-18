@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import AppError from "../../errorHalper/App.Error";
 import { Iuser } from "../user/user.interface"
 import { User } from "../user/user.model";
@@ -5,6 +6,8 @@ import httpStatus from "http-status-codes"
 import bcryptjs from "bcryptjs"
 
 import { createNewAccessTokenWinthRefreshToken, createUserToken } from "../../utils/userToken";
+import { envVars } from "../../config/env";
+import { JwtPayload } from "jsonwebtoken";
 
 
 // accessToken and Refresh Token Business Logic
@@ -45,4 +48,20 @@ const getNewAccessToken = async (refreshToken: string) => {
    }
 }
 
-export const AuthService = { credentialLogin, getNewAccessToken }
+const resetPassword = async (oldPassword: string, newPassword: string, decodedToken: JwtPayload) => {
+
+    const user = await User.findById(decodedToken.userId)
+
+    const isOldPasswordMatch = await bcryptjs.compare(oldPassword, user!.password as string)
+    if (!isOldPasswordMatch) {
+        throw new AppError(httpStatus.UNAUTHORIZED, "Old Password does not match");
+    }
+
+    user!.password = await bcryptjs.hash(newPassword, Number(envVars.BCRYPT_SALT_ROUTD))
+
+    user!.save();
+
+
+}
+
+export const AuthService = { credentialLogin, getNewAccessToken,resetPassword}

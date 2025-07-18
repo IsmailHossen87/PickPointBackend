@@ -6,10 +6,17 @@ import { notFound } from "./app/middleware/notFound"
 import cookieParser from "cookie-parser"
 import passport from "passport"
 import expressSession from "express-session"
+import { envVars } from "./app/config/env"
+import "./app/config/passport"
 
 
 
-const app = express()
+const app = express() 
+app.use(expressSession({
+    secret: envVars.Express_SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false
+}))
 app.use(cookieParser())
 app.use(express.json())
 app.use(cors())
