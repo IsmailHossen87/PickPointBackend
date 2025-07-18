@@ -5,6 +5,8 @@ import httpStatus from "http-status-codes"
 import { AuthService } from "./auth.service"
 import AppError from "../../errorHalper/App.Error"
 import { setAuthCookie } from "../../utils/setCookie"
+import { createUserToken } from "../../utils/userToken"
+import { envVars } from "../../config/env"
 
 
 
@@ -63,5 +65,20 @@ const logout = catchAsync(async (req: Request, res: Response, next: NextFunction
         data: null,
     })
 })
+// For LogOut
+const googleCallbackController = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
-export const AuthControler = { credentialLogin, getNewAccessToken,logout }
+    const user = req.user; 
+    if(!user){
+        throw new AppError(httpStatus.NOT_FOUND,"User Not Found")
+    }
+    const tokenInfo = await createUserToken(user)
+    setAuthCookie(res,tokenInfo)
+
+    res.redirect(envVars.FRONTEND_URL)
+
+})
+
+
+
+export const AuthControler = { credentialLogin, getNewAccessToken,logout,googleCallbackController }
