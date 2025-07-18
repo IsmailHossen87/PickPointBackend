@@ -5,10 +5,6 @@ import { userService } from "./user.service";
 import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendReponse";
 
-import { envVars } from "../../config/env";
-import { verifyToken } from "../../utils/jwt";
-import { JwtPayload } from "jsonwebtoken";
-
 
 
 const createUser = catchAsync(async (req: Request, res: Response, next: NextFunction) => {

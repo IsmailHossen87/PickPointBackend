@@ -18,6 +18,7 @@ export enum IsActive{
     BLOCKED = "BLOCKED"
 }
 export interface Iuser{
+    _id?: Types.ObjectId,
     name:string;
     email:string;
     password?:string;

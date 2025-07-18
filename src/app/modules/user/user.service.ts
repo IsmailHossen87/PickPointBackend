@@ -1,5 +1,5 @@
 import AppError from "../../errorHalper/App.Error";
-import { IAuthProvider, IsActive, Iuser, Role } from "./user.interface";
+import { IAuthProvider, Iuser, Role } from "./user.interface";
 import { User } from "./user.model";
 import httpStatus from "http-status-codes"
 import bcryptjs from "bcryptjs"
@@ -16,12 +16,13 @@ const createUser = async (payload: Partial<Iuser>) => {
     //  for password
     const hashePassword = await bcryptjs.hash(password as string, Number(envVars.BCRYPT_SALT_ROUTD))
 
-    //  for authProvider
+    //  when the person login email then ID = email,Email providerId 
     const AuthProvider: IAuthProvider = { provider: "credentials", providerId: email as string }
 
     const user = await User.create({
         email,
         password: hashePassword,
+        // একজন ইউজার হয়তো বিভিন্ন উপায়ে (credentials, Google, GitHub ইত্যাদি) লগইন করতে পারে। auths অ্যারেতে প্রতিটা পদ্ধতির রেকর্ড রাখা হয়।
         auths: [AuthProvider]
         , ...rest
     })
