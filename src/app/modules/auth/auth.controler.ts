@@ -65,23 +65,23 @@ const logout = catchAsync(async (req: Request, res: Response, next: NextFunction
         data: null,
     })
 })
-// reset
+// Reset Password
 const resetPassword = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const newPassword = req.body.newPassword;
-    const oldPassword = req.body.oldPassword;
     const decodedToken = req.user;
+    const newPassword = req.body.newPassword;
+    const oldPassword = req.body.oldPassword
+     await AuthService.resetPassword(oldPassword,newPassword,decodedToken)
 
-    await AuthService.resetPassword(oldPassword, newPassword, decodedToken as JwtPayload);
-
+   
     sendResponse(res, {
         success: true,
         statusCode: httpStatus.OK,
-        message: "Password Changed Successfully",
+        message: "Password Changed sucessfully",
         data: null,
     })
 })
 
-// For google
+
 const googleCallbackController = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
     // after login change path
@@ -103,4 +103,7 @@ const googleCallbackController = catchAsync(async (req: Request, res: Response, 
 
 
 
+
 export const AuthControler = { credentialLogin, getNewAccessToken, logout, googleCallbackController ,resetPassword}
+
+
