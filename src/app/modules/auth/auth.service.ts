@@ -68,3 +68,4 @@ const resetPassword = async (oldPassword: string, newPassword: string, docodedTo
    user!.save()
 }
 
+export const AuthService = {resetPassword,credentialLogin,getNewAccessToken}

@@ -2,19 +2,20 @@ import { NextFunction, Request, Response } from "express"
 import { catchAsync } from "../../utils/catchAsync"
 import { sendResponse } from "../../utils/sendReponse"
 import httpStatus from "http-status-codes"
-import { AuthService } from "./auth.service"
 import AppError from "../../errorHalper/App.Error"
 import { setAuthCookie } from "../../utils/setCookie"
 import { createUserToken } from "../../utils/userToken"
 import { envVars } from "../../config/env"
-import { JwtPayload } from "jsonwebtoken"
-import { env } from "process"
+import { AuthService } from "./auth.service"
+import passport from "passport"
+
 
 
 
 const credentialLogin = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
-    const loginInfo = await AuthService.credentialLogin(req.body)
+    // const loginInfo = await AuthService.credentialLogin(req.body)
+    passport.authenticate()
     // link
     setAuthCookie(res, loginInfo)
     sendResponse(res, {
