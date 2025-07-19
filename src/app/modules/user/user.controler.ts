@@ -4,6 +4,7 @@ import httpStatus from "http-status-codes"
 import { userService } from "./user.service";
 import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendReponse";
+import { JwtPayload } from "jsonwebtoken";
 
 
 
@@ -40,7 +41,7 @@ const updateUser = catchAsync(async (req: Request, res: Response, next: NextFunc
   const verifyedToken = req.user
   const payload = req.body
 
-  const user = await userService.updateUser(userId,payload,verifyedToken)
+  const user = await userService.updateUser(userId,payload,verifyedToken as JwtPayload) 
 
   sendResponse(res, {
     success: true,

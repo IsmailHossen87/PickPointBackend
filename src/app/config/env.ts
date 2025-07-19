@@ -1,6 +1,4 @@
 import dotenv from "dotenv"
-import { string } from "zod"
-
 dotenv.config()
 
 interface ENVconfig {
