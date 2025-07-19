@@ -6,8 +6,10 @@ import httpStatus from "http-status-codes"
 import bcryptjs from "bcryptjs"
 
 import { createNewAccessTokenWinthRefreshToken, createUserToken } from "../../utils/userToken";
-import { JwtPayload } from "jsonwebtoken";
 import { envVars } from "../../config/env";
+import { JwtPayload } from "jsonwebtoken";
+
+
 
 
 // accessToken and Refresh Token Business Logic
@@ -66,4 +68,3 @@ const resetPassword = async (oldPassword: string, newPassword: string, docodedTo
    user!.save()
 }
 
-export const AuthService = { credentialLogin, getNewAccessToken ,resetPassword}

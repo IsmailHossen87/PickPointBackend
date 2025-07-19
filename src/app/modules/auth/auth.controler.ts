@@ -7,6 +7,8 @@ import AppError from "../../errorHalper/App.Error"
 import { setAuthCookie } from "../../utils/setCookie"
 import { createUserToken } from "../../utils/userToken"
 import { envVars } from "../../config/env"
+import { JwtPayload } from "jsonwebtoken"
+import { env } from "process"
 
 
 
@@ -15,8 +17,6 @@ const credentialLogin = catchAsync(async (req: Request, res: Response, next: Nex
     const loginInfo = await AuthService.credentialLogin(req.body)
     // link
     setAuthCookie(res, loginInfo)
-
-
     sendResponse(res, {
         success: true,
         statusCode: httpStatus.OK,
@@ -82,20 +82,28 @@ const resetPassword = catchAsync(async (req: Request, res: Response, next: NextF
 })
 
 
-// For LogOut
 const googleCallbackController = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
+    // after login change path
+    let redirectTo = req.query.state ? req.query.state as string :"/" 
+    if(redirectTo.startsWith("/")){
+        redirectTo = redirectTo.slice(1)
+    }
+
     const user = req.user; 
-    if(!user){
-        throw new AppError(httpStatus.NOT_FOUND,"User Not Found")
+    if (!user) {
+        throw new AppError(httpStatus.NOT_FOUND, "User Not Found")
     }
     const tokenInfo = await createUserToken(user)
-    setAuthCookie(res,tokenInfo)
+    setAuthCookie(res, tokenInfo)
 
-    res.redirect(envVars.FRONTEND_URL)
+    res.redirect(`${envVars.FRONTEND_URL}/${redirectTo}`)
 
 })
 
 
 
-export const AuthControler = { credentialLogin, getNewAccessToken,logout,googleCallbackController,resetPassword }
+
+export const AuthControler = { credentialLogin, getNewAccessToken, logout, googleCallbackController ,resetPassword}
+
+
