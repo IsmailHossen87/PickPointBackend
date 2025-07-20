@@ -15,15 +15,36 @@ import passport from "passport"
 const credentialLogin = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
     // const loginInfo = await AuthService.credentialLogin(req.body)
-    passport.authenticate()
-    // link
-    setAuthCookie(res, loginInfo)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
+    passport.authenticate("local",async(err:any,user:any,info:any)=>{ 
+        // err,user and info its come from passport
+
+        if(err){
+            return  next(new AppError(401,err))
+        }
+        if(!user){ 
+            // return next(new AppError(401,info.message))
+             throw new Error(err)
+        }
+
+        const userTokens  = await createUserToken(user)
+
+        const {password:pass,...rest} = user.toObject()
+    
+    setAuthCookie(res, userTokens)
     sendResponse(res, {
         success: true,
         statusCode: httpStatus.OK,
         message: "User logged In sucessfully",
-        data: loginInfo
+        data: {
+            accessToken:userTokens.accessToken,
+            refrestToken:userTokens.refreshToken,
+            user: rest
+        }
     })
+    })(req,res,next)
+    // link
+
 })
 // accessToken
 const getNewAccessToken = catchAsync(async (req: Request, res: Response, next: NextFunction) => {

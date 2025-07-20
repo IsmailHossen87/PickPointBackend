@@ -11,17 +11,20 @@ passport.use(
     new LocalStrategy({
         usernameField: "email",
         passwordField: "password"
-    }, async (email: string, password: string, done: VerifyCallback) => {
+    }, async (email: string, password: string, done) => {
         try {
 
             const isUserExites = await User.findOne({ email })
             if (!isUserExites) {
                 return done(null, false, { message: "User does not exist" })
             }
+            // if (!isUserExites) {
+            //     return done("User does not exist")
+            // }
 
             // google authenticate hole password check korte hobe na
             const isGoogleAuthentication = isUserExites.auths.some((providerObjects =>providerObjects.provider == "google"))
-            if(isGoogleAuthentication){
+            if(isGoogleAuthentication && !isUserExites.password){
                 return done(null,false ,{message:"You have authenticated through Google.So if you want to login with credentials,then at first login with google and set a password for your Gmail and then you login with email and password"})
             }
 
