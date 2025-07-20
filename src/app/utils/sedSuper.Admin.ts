@@ -30,7 +30,7 @@ export const seedSuperAdmin = async()=>{
         }
 
         const superAdmin = await User.create(payload)
-        console.log("Super Admin Created Sucessfully \n")
+
         console.log(superAdmin)
 
     }catch(err){

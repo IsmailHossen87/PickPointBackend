@@ -11,9 +11,6 @@ router.post("/logout",AuthControler.logout)
 router.post("/refresh-token",AuthControler.getNewAccessToken) 
 router.post("/reset-password", checkAuth(...Object.values(Role)), AuthControler.resetPassword)
 
-
-router.post("/refresh-token",AuthControler.getNewAccessToken)
-
 // google diye authentication
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 router.get("/google",async(req:Request,res:Response,next:NextFunction)=>{ 
