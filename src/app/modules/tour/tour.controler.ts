@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendReponse";
 import { TourService } from "./tour.service";
+import { string } from "zod";
 
 
 // TOUR TYPE
@@ -60,31 +61,39 @@ const createTour = catchAsync(async (req: Request, res: Response) => {
     });
 });
 // allTour
-const getAllTours = async (query: Record<string, string>) => {
+const getAllTours = catchAsync(async(req:Request,res:Response)=>{
+    const query = await req.query
+    const result = await TourService.getAllTours(query as Record<string,string>)
+      sendResponse(res, {
+        statusCode: 201,
+        success: true,
+        message: 'Tour  retrived successfully',
+        data: result,
+    });
+})
 
 
-    const queryBuilder = new QueryBuilder(Tour.find(), query)
 
-    const tours = await queryBuilder
-        .search(tourSearchableFields)
-        .filter()
-        .sort()
-        .fields()
-        .paginate()
-
-    // const meta = await queryBuilder.getMeta()
-
-    const [data, meta] = await Promise.all([
-        tours.build(),
-        queryBuilder.getMeta()
-    ])
-
-    return {
-        data,
-        meta
-    }
-};
-
+const updateTour = catchAsync(async(req:Request,res:Response)=>{
+    const {id} = req.params;
+    const update = await TourService.updateTour(id,req.body)
+      sendResponse(res, {
+        statusCode: 201,
+        success: true,
+        message: 'Tour update successfully',
+        data: update,
+    });
+})
+const deleteTour = catchAsync(async(req:Request,res:Response)=>{
+    const {id} = req.params;
+    const result = await TourService.deleteTour(id)
+      sendResponse(res, {
+        statusCode: 201,
+        success: true,
+        message: 'Tour deleted successfully',
+        data: result,
+    });
+})
 
 
 
@@ -94,7 +103,7 @@ export const TourController = {
     getAllTourTypes,
     deleteTourType,
     updateTourType,
-    // getAllTours,
-    // updateTour,
-    // deleteTour,
+    getAllTours,
+    updateTour,
+    deleteTour,
 };
