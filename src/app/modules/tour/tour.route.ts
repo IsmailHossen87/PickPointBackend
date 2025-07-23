@@ -3,7 +3,7 @@ import { checkAuth } from "../../middleware/checkAuth";
 import { Role } from "../user/user.interface";
 import { validateRequest } from "../../middleware/validateRequest";
 import { TourController } from "./tour.controler";
-import { createTourTypeZodSchema, createTourZodSchema } from "./tour.validation";
+import { createTourTypeZodSchema, createTourZodSchema, updateTourZodSchema } from "./tour.validation";
 
 const router = express.Router();
 // tour type 
@@ -28,6 +28,20 @@ router.post(
     checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
     validateRequest(createTourZodSchema),
     TourController.createTour
+);
+// get allTour
+router.get("/", TourController.getAllTours);
+// updateTour
+router.patch(
+    "/:id",
+    checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
+    validateRequest(updateTourZodSchema),
+    TourController.updateTour
+);
+router.delete(
+    "/:id",
+    checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
+    TourController.deleteTour
 );
 
 
