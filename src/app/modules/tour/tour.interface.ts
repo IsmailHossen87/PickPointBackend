@@ -19,9 +19,10 @@ export interface ITour{
     amenities?:string[]
     tourPlan?:string;
     maxGuest?:number;
-    minAge?:number;
+    minAge?:number; 
+
+    // foreing data
     division:Types.ObjectId;
-    country:Types.ObjectId;
     tourType:Types.ObjectId
 
 }
