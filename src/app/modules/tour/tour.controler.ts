@@ -68,7 +68,8 @@ const getAllTours = catchAsync(async(req:Request,res:Response)=>{
         statusCode: 201,
         success: true,
         message: 'Tour  retrived successfully',
-        data: result,
+        meta: result.meta,
+        data: result.data,
     });
 })
 

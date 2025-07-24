@@ -1,6 +1,9 @@
+import { QueryBuilder } from "../../utils/QueryBuilder";
 import { tourSearchableFields } from "./tour.constant";
 import { ITour, ITourType } from "./tour.interface";
 import { Tour, TourType } from "./tour.model";
+
+
 
 // TOUR TYPE
 const createTourType = async (payload: ITourType) => {
@@ -35,8 +38,6 @@ const deleteTourType = async (id: string) => {
 };
 
 
-
-
 // TOUR
 const createTour = async (payload: ITour) => {
     const existingTour = await Tour.findOne({ title: payload.title });
@@ -48,23 +49,21 @@ const createTour = async (payload: ITour) => {
 };
 
 const getAllTours = async (query: Record<string, string>) => {
-    const filter = query;
-    const searchTerm = query.searchTerm || ""
 
-    delete filter["searchTerm"]
+    const queryBuilder = new QueryBuilder(Tour.find(),query)
 
-    const searchQuery = {
-        $or: tourSearchableFields.map(field => ({ [field]: { $regex: searchTerm, $options: "i" } }))
-    }
+    const tours = await queryBuilder
+                        .search(tourSearchableFields)
+                        .filter()
+                        .sort()
+                        .fields()
+                        .paginate()
+                        .build()
+      const meta = await queryBuilder.getMeta() 
 
-
-    const tours = await Tour.find(searchQuery).find(filter)
-    const totalTours = await Tour.countDocuments()
     return {
-        data: tours,
-        meta: {
-            total: totalTours
-        }
+        data:tours,
+        meta:meta
     }
 
 };
