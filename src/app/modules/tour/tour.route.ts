@@ -20,8 +20,10 @@ router.patch(
     validateRequest(createTourTypeZodSchema),
     TourController.updateTourType
 );
-
 router.delete("/tour-types/:id", checkAuth(Role.ADMIN, Role.SUPER_ADMIN), TourController.deleteTourType);
+
+
+
 // tour
 router.post(
     "/create",
@@ -38,6 +40,8 @@ router.patch(
     validateRequest(updateTourZodSchema),
     TourController.updateTour
 );
+// single Tour get
+router.get("/:slug",checkAuth(Role.ADMIN,Role.SUPER_ADMIN),TourController.getSingleTour)
 router.delete(
     "/:id",
     checkAuth(Role.ADMIN, Role.SUPER_ADMIN),

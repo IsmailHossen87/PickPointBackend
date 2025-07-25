@@ -1,9 +1,11 @@
 import { Query } from "mongoose";
 import { excludeField } from "../contants";
 
-export class QueryBuilder<T> {
-    public modelQuery: Query<T[], T>;
-    public readonly query: Record<string, string>
+export class QueryBuilder<T> {     // T= User, Book, Product           
+    public modelQuery: Query<T[], T>;          
+    public readonly query: Record<string, string>  // { sort: 'price', page: '2' }
+
+    // searchTerm=beach&sort=price&limit=5&page=2&fields=name,price
 
     constructor(modelQuery: Query<T[], T>, query: Record<string, string>) {
         this.modelQuery = modelQuery;
