@@ -72,7 +72,18 @@ const getAllTours = catchAsync(async(req:Request,res:Response)=>{
         data: result.data,
     });
 })
+// single
+const getSingleTour = catchAsync(async(req:Request,res:Response)=>{
+   const slug = req.params.slug;
+   const result = await TourService.getsingleTour(slug)
+     sendResponse(res,{
+        statusCode:200,
+        success:true,
+        message:"Tour retrieved",
+        data:result.data,
+    })
 
+}) 
 
 
 const updateTour = catchAsync(async(req:Request,res:Response)=>{
@@ -105,6 +116,7 @@ export const TourController = {
     deleteTourType,
     updateTourType,
     getAllTours,
+    getSingleTour,
     updateTour,
     deleteTour,
 };

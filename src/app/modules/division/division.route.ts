@@ -12,8 +12,9 @@ validateRequest(createDivisionSchema),
 DivisionController.createDivision)
 // all division get
 router.get("/",DivisionController.getAllDivision)
+
 // single division get
-router.get("/:id",checkAuth(Role.ADMIN,Role.SUPER_ADMIN),DivisionController.getSingleDivision)
+router.get("/:slug",checkAuth(Role.ADMIN,Role.SUPER_ADMIN),DivisionController.getSingleDivision)
 // update
 router.patch(
     "/:id",

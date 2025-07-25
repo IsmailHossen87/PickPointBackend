@@ -7,7 +7,6 @@ import { Tour, TourType } from "./tour.model";
 
 // TOUR TYPE
 const createTourType = async (payload: ITourType) => {
-
     const existingTourType = await TourType.findOne({ name: payload });
 
     if (existingTourType) {
@@ -49,8 +48,8 @@ const createTour = async (payload: ITour) => {
 };
 
 const getAllTours = async (query: Record<string, string>) => {
-
-    const queryBuilder = new QueryBuilder(Tour.find(),query)
+   
+    const queryBuilder = new QueryBuilder(Tour.find(),query) //const filterQuery = Tour.find(filter)
 
     const tours = await queryBuilder
                         .search(tourSearchableFields)
@@ -67,7 +66,13 @@ const getAllTours = async (query: Record<string, string>) => {
     }
 
 };
-
+// getSingle
+const getsingleTour = async(slug:string)=>{
+    const tour = await Tour.findOne({slug})
+    return {
+        data:tour,
+    }
+}
 const updateTour = async (id: string, payload: Partial<ITour>) => {
     const existingTour = await Tour.findById(id)
     if (!existingTour) {
@@ -88,6 +93,7 @@ export const TourService = {
     updateTourType,
     getAllTourTypes,
     getAllTours,
+    getsingleTour,
     updateTour,
     deleteTour,
 };

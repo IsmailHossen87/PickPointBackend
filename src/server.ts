@@ -4,6 +4,7 @@ import { Server } from "http"
 import app from "./app";
 import { envVars } from "./app/config/env";
 import { seedSuperAdmin } from "./app/utils/sedSuper.Admin";
+import { Division } from "./app/modules/division/division.model";
 
 
 let server: Server;
@@ -22,9 +23,9 @@ const startServer = async () => {
 
 
 (
-   async()=>{
-    await  startServer()
-    await  seedSuperAdmin()
+   async () => {
+      await startServer()
+      await seedSuperAdmin()
    }
 )()
 
@@ -70,3 +71,18 @@ process.on("SIGINT", () => {
    process.exit(1)
 })
 
+const dropCountryUniqueIndex = async () => {
+   try {
+      const indexes = await Division.indexes();
+      const countryIndex = indexes.find(index => index.key.country === 1 && index.unique);
+
+      if (countryIndex) {
+         await Division.collection.dropIndex(countryIndex.name);
+         console.log(`Dropped index: ${countryIndex.name}`);
+      } else {
+         console.log("No unique index found on 'country' field.");
+      }
+   } catch (error) {
+      console.error("Failed to drop index:", error)
+   }
+}
