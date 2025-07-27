@@ -21,7 +21,7 @@ const PaymentSchema = new Schema<IPament>({
         enum:Object.values(PAYMENT_STATUS),
         default:PAYMENT_STATUS.UNPAIND
     },
-    paymentGatwayData: {
+     paymentGatewayData: {
         type: Schema.Types.Mixed,
     },
     invoiceUrl: {
@@ -32,4 +32,4 @@ const PaymentSchema = new Schema<IPament>({
     timestamps: true
 })
 
-export const Booking  = model<IBooking>("Booking",bookingSchema)
+export const Payment  = model<IPament>("Payment",PaymentSchema)
