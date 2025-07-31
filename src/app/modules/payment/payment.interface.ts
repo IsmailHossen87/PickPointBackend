@@ -1,7 +1,7 @@
 import { Types } from "mongoose"
 
 export enum PAYMENT_STATUS {
-    PAIND = "PAIND",
+    PAID = "PAID",
     UNPAIND = "UNPAIND",
     CANCEL = "CANCEL",
     FAILED = "FAILED",

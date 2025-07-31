@@ -7,7 +7,6 @@ import httpStatus from "http-status-codes"
 import { Booking } from "./booking.model";
 import { Tour } from "../tour/tour.model";
 import { SSLService } from "../sslCommerz/sslCommerz.service";
-import { ISSLCommerz } from "../sslCommerz/sslCommerz.interface";
 const getTransectionId = () => {
     return `tran_${Date.now()}_${Math.floor(Math.random() * 1000)}`
 }
