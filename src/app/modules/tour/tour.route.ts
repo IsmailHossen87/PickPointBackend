@@ -4,6 +4,7 @@ import { Role } from "../user/user.interface";
 import { validateRequest } from "../../middleware/validateRequest";
 import { TourController } from "./tour.controler";
 import { createTourTypeZodSchema, createTourZodSchema, updateTourZodSchema } from "./tour.validation";
+import { multerUpload } from "../../config/moduler.config";
 
 const router = express.Router();
 // tour type 
@@ -12,7 +13,7 @@ router.post(
     checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
     validateRequest(createTourTypeZodSchema),
     TourController.createTourType
-); 
+);
 router.get("/tour-types", TourController.getAllTourTypes);
 router.patch(
     "/tour-types/:id",
@@ -28,6 +29,7 @@ router.delete("/tour-types/:id", checkAuth(Role.ADMIN, Role.SUPER_ADMIN), TourCo
 router.post(
     "/create",
     checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
+    multerUpload.array("files"),
     validateRequest(createTourZodSchema),
     TourController.createTour
 );
@@ -37,11 +39,14 @@ router.get("/", TourController.getAllTours);
 router.patch(
     "/:id",
     checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
+    multerUpload.array("files"),
     validateRequest(updateTourZodSchema),
     TourController.updateTour
 );
 // single Tour get
-router.get("/:slug",checkAuth(Role.ADMIN,Role.SUPER_ADMIN),TourController.getSingleTour)
+router.get("/:slug",
+    checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
+    TourController.getSingleTour)
 router.delete(
     "/:id",
     checkAuth(Role.ADMIN, Role.SUPER_ADMIN),

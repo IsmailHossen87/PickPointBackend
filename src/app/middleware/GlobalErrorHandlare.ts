@@ -6,9 +6,10 @@ import { handleDuplicateError } from "../helpers/handle.Duplicate";
 import { handleCastError } from "../helpers/handle.CastError";
 import { handleZodError } from "../helpers/handle.Zoderror";
 import { handleValidationError } from "../helpers/handle.Validation";
+import { deleteImageFromCloudinary } from "../config/cloudinary.config";
 
 
-export const globalErrorHandler = ( err: any,req: Request, res: Response,next: NextFunction) => { 
+export const globalErrorHandler = async( err: any,req: Request, res: Response,next: NextFunction) => { 
     if(envVars.NODE_ENV === "development"){
         console.log(err)
     }
@@ -17,14 +18,26 @@ export const globalErrorHandler = ( err: any,req: Request, res: Response,next: N
     let message = "Something went wrong!";
     let errorSources: TErrorSources[] = [];
 
+    // For image Cloudinary DELETE image
+    if(req.file){
+        await deleteImageFromCloudinary(req.file.path)   //for single image
+    }
+    if(req.files && req.files.length && Array.isArray(req.files)){
+        const imageUrls = (req.files as Express.Multer.File[]).map(file => file.path)  //COLLECT url []
+        await Promise.all(imageUrls.map(url => deleteImageFromCloudinary(url)))
+    }
+
+
     if (err.code === 11000) {
         const simplifiedError = handleDuplicateError(err);
         statusCode = simplifiedError.statusCode;
         message = simplifiedError.message;
+         // It has no Source
     } else if (err.name === "CastError") {
         const simplifiedError = handleCastError(err);
         statusCode = simplifiedError.statusCode;
         message = simplifiedError.message;
+        // It has no Source
     } else if (err.name === "ZodError") {
         const simplifiedError = handleZodError(err);
         statusCode = simplifiedError.statusCode;
