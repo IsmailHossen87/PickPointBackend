@@ -7,9 +7,8 @@ import httpStatus from "http-status-codes"
 import { Booking } from "./booking.model";
 import { Tour } from "../tour/tour.model";
 import { SSLService } from "../sslCommerz/sslCommerz.service";
-const getTransectionId = () => {
-    return `tran_${Date.now()}_${Math.floor(Math.random() * 1000)}`
-}
+import { getTransectionId } from "../../utils/getTransactionId";
+
 
 
 const createBooking = async (payload: Partial<IBooking>, userId: string) => {

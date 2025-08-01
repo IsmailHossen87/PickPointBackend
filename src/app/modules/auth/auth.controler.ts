@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextFunction, Request, Response } from "express"
 import { catchAsync } from "../../utils/catchAsync"
 import { sendResponse } from "../../utils/sendReponse"
@@ -8,6 +9,7 @@ import { createUserToken } from "../../utils/userToken"
 import { envVars } from "../../config/env"
 import { AuthService } from "./auth.service"
 import passport from "passport"
+import { JwtPayload } from "jsonwebtoken"
 
 
 
@@ -88,11 +90,11 @@ const logout = catchAsync(async (req: Request, res: Response, next: NextFunction
     })
 })
 // Reset Password
-const resetPassword = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+const changePassword = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const decodedToken = req.user;
     const newPassword = req.body.newPassword;
     const oldPassword = req.body.oldPassword
-     await AuthService.resetPassword(oldPassword,newPassword,decodedToken)
+     await AuthService.changePassword(oldPassword,newPassword,decodedToken as JwtPayload)
 
    
     sendResponse(res, {
@@ -101,6 +103,16 @@ const resetPassword = catchAsync(async (req: Request, res: Response, next: NextF
         message: "Password Changed sucessfully",
         data: null,
     })
+})
+
+const resetPassword = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+ return {} 
+})
+const setPassword = catchAsync(async (req: Request, res: Response, next: NextFunction) => { 
+    const {password} = req.body
+    const decodedToken = req.user as JwtPayload 
+       await AuthService.setrPassword(decodedToken.userId,password)
+ return {} 
 })
 
 
@@ -126,6 +138,6 @@ const googleCallbackController = catchAsync(async (req: Request, res: Response, 
 
 
 
-export const AuthControler = { credentialLogin, getNewAccessToken, logout, googleCallbackController ,resetPassword}
+export const AuthControler = { credentialLogin, getNewAccessToken, logout, googleCallbackController ,changePassword,resetPassword,setPassword}
 
 

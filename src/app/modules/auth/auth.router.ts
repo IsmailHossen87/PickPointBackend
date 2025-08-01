@@ -9,7 +9,9 @@ const router = Router()
 router.post("/login",AuthControler.credentialLogin)
 router.post("/logout",AuthControler.logout)
 router.post("/refresh-token",AuthControler.getNewAccessToken) 
+router.post("/change-password", checkAuth(...Object.values(Role)), AuthControler.changePassword)
 router.post("/reset-password", checkAuth(...Object.values(Role)), AuthControler.resetPassword)
+router.post("/setpassword", checkAuth(...Object.values(Role)), AuthControler.setPassword)
 
 // google diye authentication
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
