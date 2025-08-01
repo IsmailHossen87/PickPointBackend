@@ -4,10 +4,12 @@ import { Role } from "../user/user.interface";
 import { DivisionController } from "./division.controler";
 import { validateRequest } from "../../middleware/validateRequest";
 import { createDivisionSchema, updateDivisionSchema } from "./division.validation";
+import { multerUpload } from "../../config/moduler.config";
 
 const router = Router()
 // Post division
 router.post("/create",checkAuth(Role.ADMIN,Role.SUPER_ADMIN),
+multerUpload.single("file"),  //for image upload
 validateRequest(createDivisionSchema),
 DivisionController.createDivision)
 // all division get
@@ -19,6 +21,7 @@ router.get("/:slug",checkAuth(Role.ADMIN,Role.SUPER_ADMIN),DivisionController.ge
 router.patch(
     "/:id",
     checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
+    multerUpload.single("file"),  //for image update
     validateRequest(updateDivisionSchema),
     DivisionController.updatedDivision
 );
