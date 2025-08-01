@@ -26,7 +26,8 @@ const getAllTourTypes = catchAsync(async (req: Request, res: Response) => {
         data: result,
     });
 });
-const updateTourType = catchAsync(async (req: Request, res: Response) => {
+const updateTourType = catchAsync(async (req: Request, res: Response) => { 
+   
     const { id } = req.params;
     const { name } = req.body;
     const result = await TourService.updateTourType(id, name);
@@ -94,9 +95,16 @@ const getSingleTour = catchAsync(async(req:Request,res:Response)=>{
 }) 
 
 
-const updateTour = catchAsync(async(req:Request,res:Response)=>{
+const updateTour = catchAsync(async(req:Request,res:Response)=>{ 
+    
+    //FOR IMAGE SEND
+     const payload :ITour = {
+        ...req.body,
+        images:(req.files as Express.Multer.File[])?.map(file =>file.path)
+    }
+
     const {id} = req.params;
-    const update = await TourService.updateTour(id,req.body)
+    const update = await TourService.updateTour(id,payload)
       sendResponse(res, {
         statusCode: 201,
         success: true,

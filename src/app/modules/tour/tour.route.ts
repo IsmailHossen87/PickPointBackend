@@ -13,7 +13,7 @@ router.post(
     checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
     validateRequest(createTourTypeZodSchema),
     TourController.createTourType
-); 
+);
 router.get("/tour-types", TourController.getAllTourTypes);
 router.patch(
     "/tour-types/:id",
@@ -39,11 +39,14 @@ router.get("/", TourController.getAllTours);
 router.patch(
     "/:id",
     checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
+    multerUpload.array("files"),
     validateRequest(updateTourZodSchema),
     TourController.updateTour
 );
 // single Tour get
-router.get("/:slug",checkAuth(Role.ADMIN,Role.SUPER_ADMIN),TourController.getSingleTour)
+router.get("/:slug",
+    checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
+    TourController.getSingleTour)
 router.delete(
     "/:id",
     checkAuth(Role.ADMIN, Role.SUPER_ADMIN),

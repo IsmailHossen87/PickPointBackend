@@ -5,6 +5,7 @@ import httpStatus from "http-status-codes"
 import bcryptjs from "bcryptjs"
 import { envVars } from "../../config/env";
 import { JwtPayload } from "jsonwebtoken";
+import { deleteImageFromCloudinary } from "../../config/cloudinary.config";
 
 
 const createUser = async (payload: Partial<Iuser>) => {
@@ -59,7 +60,11 @@ const updateUser = async (userId: string, payload: Partial<Iuser>, decodedToken:
     if (payload.password) {
         payload.password = await bcryptjs.hash(payload.password, envVars.BCRYPT_SALT_ROUTD)
     }
-    const newUpdateUser = await User.findByIdAndUpdate(userId, payload, { new: true, runValidators: true })
+    const newUpdateUser = await User.findByIdAndUpdate(userId, payload, { new: true, runValidators: true }) 
+    // user Image check
+    if(payload.picture && ifUserExit.picture){
+        await deleteImageFromCloudinary(ifUserExit.picture)
+    }
     return newUpdateUser;
 
 }

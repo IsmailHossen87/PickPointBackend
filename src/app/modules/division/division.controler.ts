@@ -47,9 +47,14 @@ const getSingleDivision = catchAsync(async (req: Request, res: Response) => {
 
 })
 // update 
-const updatedDivision = catchAsync(async (req: Request, res: Response) => {
+const updatedDivision = catchAsync(async (req: Request, res: Response) => { 
+    // for image\
+    const payload :IDivision ={
+        ...req.body,
+        thumbail:req.file?.path
+    }
     const id = req.params.id;
-    const result = await DivisionService.updateDivision(id, req.body)
+    const result = await DivisionService.updateDivision(id,payload)
     sendResponse(res, {
         statusCode: 201,
         success: true,

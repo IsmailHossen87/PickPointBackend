@@ -1,3 +1,4 @@
+import { deleteImageFromCloudinary } from "../../config/cloudinary.config";
 import { IDivision } from "./division.interface";
 import { Division } from "./division.model";
 
@@ -45,6 +46,10 @@ const updateDivision = async (id: string, payload: Partial<IDivision>) => {
     }
 
     const updatedDivision = await Division.findByIdAndUpdate(id, payload, { new: true, runValidators: true })
+    // image update from Cloudinary
+     if(payload.thumbail && existingDivision.thumbail){
+        await deleteImageFromCloudinary(existingDivision.thumbail)
+     }
 
     return updatedDivision
 };
