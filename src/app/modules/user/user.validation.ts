@@ -44,29 +44,10 @@ export const createUserZodSchema = z.object({
     })
     .optional(),
 
-  picture: z
-    .string({ invalid_type_error: "Picture must be a string" })
-    .url({ message: "Picture must be a valid URL" })
-    .optional(),
-
   address: z
     .string({ invalid_type_error: "Address must be a string" })
     .max(200, { message: "Address cannot exceed 200 characters." })
-    .optional(),
-
-  isDeleted: z.string().optional(),
-
-  isActive: IsActiveEnum.optional(),
-
-  isVerified: z.boolean().optional(),
-
-  role: RoleEnum,
-
-  auths: z.array(AuthProviderSchema),
-
-  bookings: z.array(z.any()).optional(), // or use z.string().uuid() or ObjectId validation if needed
-
-  guides: z.array(z.any()).optional(),
+    .optional() 
 });
 export const updateUserZodSchema = z.object({
   name: z

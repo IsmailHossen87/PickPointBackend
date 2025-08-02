@@ -37,11 +37,18 @@ interface ENVconfig {
         CLOUDINARY_CLOUD_NAME: string
         CLOUDINARY_API_KEY: string
         CLOUDINARY_SECRET: string
+    },
+    EMAIL_SENDER: {
+        SMTP_PASS: string,
+        SMTP_PORT: string,
+        SMTP_USER: string,
+        SMTP_HOST: string,
+        SMTP_FROM: string,
     }
 }
 
 const loadEnvVariable = (): ENVconfig => {
-    const requireEnv: string[] = ["Port", "DB_URL", "NODE_ENV", "BCRYPT_SALT_ROUTD", "JWT_ACCESS_SECRET", "JWT_ACCESS_EXPIRES", "SUPER_ADMIN_PASSWORD", "SUPER_ADMIN_EMAIL", "JWT_REFRESH_SECRET", "JWT_REFRESH_EXPIRES", "GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET", "GOOGLE_CALLBACK_URL", "Express_SESSION_SECRET", "FRONTEND_URL", "SSL_SUCESS_BACKEND_URL", "SSL_FAIL_BACKEND_URL", "SSL_CANCEL_BACKEND_URL", "SSL_SUCESS_FRONTEND_URL", "SSL_FAIL_FRONTEND_URL", "SSL_CANCEL_FRONTEND_URL", "CLOUDINARY_CLOUD_NAME", "CLOUDINARY_API_KEY", "CLOUDINARY_SECRET"
+    const requireEnv: string[] = ["Port", "DB_URL", "NODE_ENV", "BCRYPT_SALT_ROUTD", "JWT_ACCESS_SECRET", "JWT_ACCESS_EXPIRES", "SUPER_ADMIN_PASSWORD", "SUPER_ADMIN_EMAIL", "JWT_REFRESH_SECRET", "JWT_REFRESH_EXPIRES", "GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET", "GOOGLE_CALLBACK_URL", "Express_SESSION_SECRET", "FRONTEND_URL", "SSL_SUCESS_BACKEND_URL", "SSL_FAIL_BACKEND_URL", "SSL_CANCEL_BACKEND_URL", "SSL_SUCESS_FRONTEND_URL", "SSL_FAIL_FRONTEND_URL", "SSL_CANCEL_FRONTEND_URL", "CLOUDINARY_CLOUD_NAME", "CLOUDINARY_API_KEY", "CLOUDINARY_SECRET", "SMTP_PASS", "SMTP_PORT", "SMTP_USER", "SMTP_HOST", "SMTP_FROM"
     ];
     requireEnv.forEach(key => {
         if (!process.env[key]) {
@@ -84,6 +91,14 @@ const loadEnvVariable = (): ENVconfig => {
             CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME as string,
             CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY as string,
             CLOUDINARY_SECRET: process.env.CLOUDINARY_SECRET as string,
+        },
+        // email Sender
+        EMAIL_SENDER: {
+            SMTP_PASS: process.env.SMTP_PASS as string,
+            SMTP_PORT: process.env.SMTP_PORT as string,
+            SMTP_USER: process.env.SMTP_USER as string,
+            SMTP_HOST: process.env.SMTP_HOST as string,
+            SMTP_FROM: process.env.SMTP_FROM as string,
         }
 
     }

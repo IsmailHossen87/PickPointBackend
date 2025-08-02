@@ -18,33 +18,33 @@ const credentialLogin = catchAsync(async (req: Request, res: Response, next: Nex
 
     // const loginInfo = await AuthService.credentialLogin(req.body)
     // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
-    passport.authenticate("local",async(err:any,user:any,info:any)=>{ 
+    passport.authenticate("local", async (err: any, user: any, info: any) => {
         // err,user and info its come from passport
 
-        if(err){
-            return  next(new AppError(401,err))
+        if (err) {
+            return next(new AppError(err.statusCode || 401, err.message))
         }
-        if(!user){ 
-            return next(new AppError(401,info.message)) 
-            
+        if (!user) {
+            return next(new AppError(401, info.message))
+
         }
 
-        const userTokens  = await createUserToken(user)
+        const userTokens = await createUserToken(user)
 
-        const {password:pass,...rest} = user.toObject()
-    
-    setAuthCookie(res, userTokens)
-    sendResponse(res, {
-        success: true,
-        statusCode: httpStatus.OK,
-        message: "User logged In sucessfully",
-        data: {
-            accessToken:userTokens.accessToken,
-            refrestToken:userTokens.refreshToken,
-            user: rest
-        }
-    })
-    })(req,res,next)
+        const { password: pass, ...rest } = user.toObject()
+
+        setAuthCookie(res, userTokens)
+        sendResponse(res, {
+            success: true,
+            statusCode: httpStatus.OK,
+            message: "User logged In sucessfully",
+            data: {
+                accessToken: userTokens.accessToken,
+                refrestToken: userTokens.refreshToken,
+                user: rest
+            }
+        })
+    })(req, res, next)
     // link
 
 })
@@ -94,9 +94,9 @@ const changePassword = catchAsync(async (req: Request, res: Response, next: Next
     const decodedToken = req.user;
     const newPassword = req.body.newPassword;
     const oldPassword = req.body.oldPassword
-     await AuthService.changePassword(oldPassword,newPassword,decodedToken as JwtPayload)
+    await AuthService.changePassword(oldPassword, newPassword, decodedToken as JwtPayload)
 
-   
+
     sendResponse(res, {
         success: true,
         statusCode: httpStatus.OK,
@@ -106,25 +106,50 @@ const changePassword = catchAsync(async (req: Request, res: Response, next: Next
 })
 
 const resetPassword = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
- return {} 
+
+    const decodedToken = req.user
+
+    await AuthService.resetPassword(req.body, decodedToken as JwtPayload);
+
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "Password Changed Successfully",
+        data: null,
+    })
 })
-const setPassword = catchAsync(async (req: Request, res: Response, next: NextFunction) => { 
-    const {password} = req.body
-    const decodedToken = req.user as JwtPayload 
-       await AuthService.setrPassword(decodedToken.userId,password)
- return {} 
+const setPassword = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const { password } = req.body
+    const decodedToken = req.user as JwtPayload
+    await AuthService.setrPassword(decodedToken.userId, password)
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "Password Changed Successfully",
+        data: null,
+    })
+})
+const forgotPassword = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+    const { email } = req.body
+    await AuthService.forgotPassword(email)
+     sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "Forgot Password Successfully",
+        data: null,
+    })
 })
 
 
 const googleCallbackController = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
     // after login change path
-    let redirectTo = req.query.state ? req.query.state as string :"/" 
-    if(redirectTo.startsWith("/")){
+    let redirectTo = req.query.state ? req.query.state as string : "/"
+    if (redirectTo.startsWith("/")) {
         redirectTo = redirectTo.slice(1)
     }
 
-    const user = req.user; 
+    const user = req.user;
     if (!user) {
         throw new AppError(httpStatus.NOT_FOUND, "User Not Found")
     }
@@ -138,6 +163,6 @@ const googleCallbackController = catchAsync(async (req: Request, res: Response, 
 
 
 
-export const AuthControler = { credentialLogin, getNewAccessToken, logout, googleCallbackController ,changePassword,resetPassword,setPassword}
+export const AuthControler = { credentialLogin, getNewAccessToken, logout, googleCallbackController, changePassword, resetPassword, setPassword, forgotPassword }
 
 
