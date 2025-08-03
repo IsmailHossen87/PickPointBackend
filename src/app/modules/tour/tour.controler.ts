@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { catchAsync } from "../../utils/catchAsync";
 import { sendResponse } from "../../utils/sendReponse";
 import { TourService } from "./tour.service";
-import { string } from "zod";
 import { ITour } from "./tour.interface";
 
 

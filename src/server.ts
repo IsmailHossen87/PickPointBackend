@@ -4,7 +4,7 @@ import { Server } from "http"
 import app from "./app";
 import { envVars } from "./app/config/env";
 import { seedSuperAdmin } from "./app/utils/sedSuper.Admin";
-import { Division } from "./app/modules/division/division.model";
+import { connectRedis } from "./app/config/redis.config";
 
 
 let server: Server;
@@ -12,7 +12,7 @@ let server: Server;
 const startServer = async () => {
    try {
       await mongoose.connect(envVars.DB_URL)
-      console.log("Connect to db")
+      // console.log("Connect to db")
       server = app.listen(envVars.Port, () => {
          console.log("Server is running")
       })
@@ -23,7 +23,8 @@ const startServer = async () => {
 
 
 (
-   async () => {
+   async () => { 
+      await connectRedis()
       await startServer()
       await seedSuperAdmin()
    }
@@ -71,18 +72,3 @@ process.on("SIGINT", () => {
    process.exit(1)
 })
 
-const dropCountryUniqueIndex = async () => {
-   try {
-      const indexes = await Division.indexes();
-      const countryIndex = indexes.find(index => index.key.country === 1 && index.unique);
-
-      if (countryIndex) {
-         await Division.collection.dropIndex(countryIndex.name);
-         console.log(`Dropped index: ${countryIndex.name}`);
-      } else {
-         console.log("No unique index found on 'country' field.");
-      }
-   } catch (error) {
-      console.error("Failed to drop index:", error)
-   }
-}
