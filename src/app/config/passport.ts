@@ -1,12 +1,14 @@
 import { Strategy as GoogleStrategy, Profile, VerifyCallback } from "passport-google-oauth20";
 import { envVars } from "./env";
 import { User } from "../modules/user/user.model";
-import { Role } from "../modules/user/user.interface";
+import { IsActive, Role } from "../modules/user/user.interface";
 import passport from "passport";
-import { Strategy as LocalStrategy } from "passport-local"; 
+import { Strategy as LocalStrategy } from "passport-local";
 import bcryptjs from "bcryptjs"
+import AppError from "../errorHalper/App.Error";
+import httpStatus from "http-status-codes"
 
-
+// Local Stregy
 passport.use(
     new LocalStrategy({
         usernameField: "email",
@@ -18,22 +20,29 @@ passport.use(
             if (!isUserExites) {
                 return done(null, false, { message: "User does not exist" })
             }
-            // if (!isUserExites) {
-            //     return done("User does not exist")
-            // }
+            if (!isUserExites.isVerified) {
+                return done("User is verified")
+            }
+            if (isUserExites.isActive === IsActive.BLOCKED || isUserExites.isActive === IsActive.INACTIVE) {
+                return done(`User is ${isUserExites.isActive}`)
+            }
+            if (isUserExites.isDeleted) {
+                return done(`User is deleted`)
+            }
+
 
             // google authenticate hole password check korte hobe na
-            const isGoogleAuthentication = isUserExites.auths.some((providerObjects =>providerObjects.provider == "google"))
-            if(isGoogleAuthentication && !isUserExites.password){
-                return done(null,false ,{message:"You have authenticated through Google.So if you want to login with credentials,then at first login with google and set a password for your Gmail and then you login with email and password"})
+            const isGoogleAuthentication = isUserExites.auths.some((providerObjects => providerObjects.provider == "google"))
+            if (isGoogleAuthentication && !isUserExites.password) {
+                return done(null, false, { message: "You have authenticated through Google.So if you want to login with credentials,then at first login with google and set a password for your Gmail and then you login with email and password" })
             }
 
             const isPasswordMatched = await bcryptjs.compare(password as string, isUserExites.password as string)
 
             if (!isPasswordMatched) {
-                return done(null, false, { message:"Password does not match"})
+                return done(null, false, { message: "Password does not match" })
             }
-            return done (null,isUserExites)
+            return done(null, isUserExites)
 
         } catch (error) {
             console.log(error)
@@ -42,7 +51,7 @@ passport.use(
     })
 )
 
-
+// Google er jonno
 passport.use(
     new GoogleStrategy(
         {
@@ -55,9 +64,19 @@ passport.use(
                 if (!email) {
                     return done(null, false, { message: "No email found " })
                 }
-                let user = await User.findOne({ email })
-                if (!user) {
-                    user = await User.create({
+                let isUserExites = await User.findOne({ email })
+                if (isUserExites && !isUserExites.isVerified) {
+                    return done(null, false, { message: "User is not verified" })
+                }
+                if (isUserExites && (isUserExites.isActive === IsActive.BLOCKED || isUserExites.isActive === IsActive.INACTIVE)) {
+
+                    return done(null,false,{message:`User is ${isUserExites.isActive}`})
+                }
+                if (isUserExites && isUserExites.isDeleted) {
+                    return done(null,false,{message:`User is deleted`})
+                }
+                if (!isUserExites) {
+                    isUserExites = await User.create({
                         email,
                         name: profile.displayName,
                         picture: profile.photos?.[0].value,
@@ -71,7 +90,7 @@ passport.use(
                         ]
                     })
                 }
-                return done(null, user)
+                return done(null, isUserExites)
             } catch (error) {
                 console.log("Google Strategy Error", error)
                 return done(error)

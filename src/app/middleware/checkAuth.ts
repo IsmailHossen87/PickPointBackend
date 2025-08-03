@@ -3,7 +3,7 @@ import AppError from "../errorHalper/App.Error";
 import { verifyToken } from "../utils/jwt";
 import { JwtPayload } from "jsonwebtoken";
 import { envVars } from "../config/env";
-import { User } from "../modules/user/user.model"; 
+import { User } from "../modules/user/user.model";
 import httpStatus from "http-status-codes"
 import { IsActive } from "../modules/user/user.interface";
 
@@ -20,6 +20,8 @@ export const checkAuth = (...authRoles: string[]) => async (req: Request, res: R
 
 
         const isUserExites = await User.findOne({ email: verifyedToken.email })
+
+        
         if (!isUserExites) {
             throw new AppError(httpStatus.BAD_REQUEST, "User  does not Exit")
         }
@@ -29,8 +31,11 @@ export const checkAuth = (...authRoles: string[]) => async (req: Request, res: R
         if (isUserExites.isDeleted) {
             throw new AppError(httpStatus.BAD_REQUEST, "User is deleted")
         }
+        if (!isUserExites.isVerified) {
+            throw new AppError(httpStatus.BAD_REQUEST, "User is not verified")
+        }
 
-        
+
         if (!authRoles.includes(verifyedToken.role)) {
             throw new AppError(403, "Your are not Permitted to view this route")
         }
