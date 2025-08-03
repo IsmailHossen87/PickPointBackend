@@ -1,32 +1,42 @@
-import { v2 as clodinary } from "cloudinary";
+// ✅ Cloudinary এবং প্রয়োজনীয় কনফিগারেশন সেটআপের জন্য ফাইল
+
+import { v2 as cloudinary } from "cloudinary";
 import { envVars } from "./env";
 import AppError from "../errorHalper/App.Error";
 
-// Its collect data frontend and Receive
-clodinary.config({
-    cloud_name: envVars.CLOUDINARY.CLOUDINARY_CLOUD_NAME,
-    api_key: envVars.CLOUDINARY.CLOUDINARY_API_KEY,
-    api_secret: envVars.CLOUDINARY.CLOUDINARY_SECRET
-})
-// create a storage (multer-storage-cloudinary) this component -> UPLOAD image the storage and give a ->  url (req.file)  -> upload mongoose
+cloudinary.config({
+  cloud_name: envVars.CLOUDINARY.CLOUDINARY_CLOUD_NAME,
+  api_key: envVars.CLOUDINARY.CLOUDINARY_API_KEY,
+  api_secret: envVars.CLOUDINARY.CLOUDINARY_SECRET,
+});
+
+// ✅ Export cloudinary object for use in other files (upload etc.)
+export const cloudinaryUpload = cloudinary;
 
 
-
-
-// delete unNecessary image from Cloudinary
+/**
+ * Cloudinary থেকে পুরাতন/অপ্রয়োজনীয় ইমেজ ডিলিট করার ফাংশন।
+ *
+ * @param url - যেই ইমেজের URL দেওয়া আছে সেটি থেকে public_id বের করে ডিলিট করা হবে
+ */
 export const deleteImageFromCloudinary = async (url: string) => {
+  try {
+    // ✅ Example URL: https://res.cloudinary.com/your_cloud_name/image/upload/v1692371823/folder1/image1.jpg
+    // ⬇️ regex দিয়ে "folder1/image1" এই অংশ (public_id) বের করা হবে 
 
-    try {
-        //v1692371823/folder1/image1.jpg 
-        const regex = /\/v\d+\/(.*?)\.(jpg|jpeg|png|gif|webp)$/i;      //search public_id
-        const match = url.match(regex)
-        if (match && match[1]) {
-            const public_id = match[1]
-            await cloudinaryUpload.uploader.destroy(public_id)
-        }
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-        throw new AppError(401, "Coudinary image deletion failed", error.message)
+    const regex = /\/v\d+\/(.*?)\.(jpg|jpeg|png|gif|webp)$/i;
+    const match = url.match(regex);
+
+    // ✅ যদি public_id পাওয়া যায়
+    if (match && match[1]) {
+      const public_id = match[1];
+
+      // Cloudinary থেকে ইমেজ ডিলিট করা হবে
+      await cloudinary.uploader.destroy(public_id);
     }
-}
-export const cloudinaryUpload = clodinary;
+
+  } catch (error: any) {
+    // যদি কোনো সমস্যা হয় তাহলে কাস্টম error throw করা হবে
+    throw new AppError(401, "Cloudinary image deletion failed", error.message);
+  }
+};
