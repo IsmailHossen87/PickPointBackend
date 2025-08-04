@@ -1,3 +1,4 @@
+import { uploadBufferCloudinary } from "../../config/cloudinary.config";
 import AppError from "../../errorHalper/App.Error";
 import { generatepdf, IInvoiceData } from "../../utils/invoice";
 import { sendEmail } from "../../utils/send.Email";
@@ -52,13 +53,16 @@ const successPayment = async (query: Record<string, string>) => {
                 { status: BOOKING_STATUS.COMPLETE },
                 { new: true, runValidators: true, session }
             ).populate("tour", "title")
-            .populate("user", "name email" )
-        if (!updateBooking) {
-            throw new AppError(401, "Booking not found")
-        }
+            .populate("user", "name email")
+
         if (!updatedPayment) {
             throw new AppError(401, "Payment not found")
         }
+
+        if (!updateBooking) {
+            throw new AppError(401, "Booking not found")
+        }
+
 
 
         // PDF sent start
@@ -70,8 +74,18 @@ const successPayment = async (query: Record<string, string>) => {
             transactionId: updatedPayment?.transactionId,
             userName: (updateBooking?.user as unknown as Iuser).name,
         }
-        console.log(invoiceData)
+
         const pdfBuffer = await generatepdf(invoiceData)
+
+        //FOR store data base
+        const cloudinaryResult = await uploadBufferCloudinary(pdfBuffer, "invoice")
+        if (!cloudinaryResult) {
+            throw new AppError(401, "Error Uploading pdf")
+        }
+        //ekhon payment er INVOICE URL ke Update korte hobe
+        await Payment.findByIdAndUpdate(updatedPayment._id, { invoiceUrl: cloudinaryResult.secure_url }, { runValidators: true, session })
+
+
         await sendEmail({
             to: (updateBooking?.user as unknown as Iuser).email,
             subject: "Your Booking Invoice",
@@ -145,5 +159,20 @@ const cancelPayment = async (query: Record<string, string>) => {
         throw error
     }
 };
+// DOWNLOAD PDF
+const invoiceService = async (paymentId: string) => {
+    const payment = await Payment.findById(paymentId)
+        .select("invoiceUrl")
 
-export const PaymentService = { successPayment, failPayment, cancelPayment, initPayment }
+    if (!payment) {
+        throw new AppError(401, "Payment not found")
+    }
+
+    if (!payment.invoiceUrl) {
+        throw new AppError(401, "No invoice found")
+    }
+
+    return payment.invoiceUrl
+};
+
+export const PaymentService = { successPayment, failPayment, cancelPayment, initPayment, invoiceService }

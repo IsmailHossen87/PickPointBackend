@@ -1,8 +1,9 @@
-// ✅ Cloudinary এবং প্রয়োজনীয় কনফিগারেশন সেটআপের জন্য ফাইল
+// Cloudinary হলো একটি cloud-based media management service — যার মাধ্যমে তুমি image, video, এবং অন্যান্য media file upload, store, transform, optimize, এবং deliver করতে পারো খুব সহজে।
 
-import { v2 as cloudinary } from "cloudinary";
+import { v2 as cloudinary, UploadApiErrorResponse } from "cloudinary";
 import { envVars } from "./env";
 import AppError from "../errorHalper/App.Error";
+import Stream from "stream"
 
 cloudinary.config({
   cloud_name: envVars.CLOUDINARY.CLOUDINARY_CLOUD_NAME,
@@ -40,3 +41,31 @@ export const deleteImageFromCloudinary = async (url: string) => {
     throw new AppError(401, "Cloudinary image deletion failed", error.message);
   }
 };
+
+// PDF UPLOAD
+export const uploadBufferCloudinary = async (buffer: Buffer, fileName: string):Promise<UploadApiErrorResponse | undefined>  => {
+  try {
+    return new Promise((resolve, reject) => {
+      const public_id = `pdf/${fileName}-${Date.now()}`
+
+      const bufferStream = new Stream.PassThrough()
+      bufferStream.end(buffer)
+
+      cloudinary.uploader.upload_stream(
+        {
+          resource_type: "auto",
+          public_id: public_id,
+          folder: "pdf"
+        }, (error, result) => {
+          if (error) {
+            return reject(error)
+          }
+          resolve(result)
+        }
+      ).end(buffer)
+    })
+  } catch (error: any) {
+    console.log(error)
+    throw new AppError(401, `Error uploading file ${error.message}`)
+  }
+}
