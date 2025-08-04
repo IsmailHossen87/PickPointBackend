@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Invoice Email</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: #f1f3f6;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        color: #333;
+      }
+      .container {
+        max-width: 600px;
+        margin: 30px auto;
+        background: #ffffff;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        background: linear-gradient(90deg, #2e86c1, #3498db);
+        padding: 20px;
+        text-align: center;
+        color: #fff;
+      }
+      .header h1 {
+        margin: 0;
+        font-size: 28px;
+      }
+      .content {
+        padding: 30px;
+      }
+      .content p {
+        font-size: 16px;
+        line-height: 1.6;
+        margin: 10px 0;
+      }
+      .label {
+        font-weight: bold;
+        color: #2e86c1;
+      }
+      .button-wrapper {
+        margin-top: 30px;
+        text-align: center;
+      }
+      .btn {
+        display: inline-block;
+        padding: 12px 25px;
+        background-color: #2e86c1;
+        color: #ffffff !important;
+        text-decoration: none;
+        border-radius: 6px;
+        font-weight: bold;
+        font-size: 15px;
+      }
+      .footer {
+        margin-top: 40px;
+        padding: 20px;
+        font-size: 13px;
+        color: #888;
+        background-color: #f9f9f9;
+        text-align: center;
+        border-top: 1px solid #eee;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- Header -->
+      <div class="header">
+        <h1>🧾 Booking Invoice</h1>
+      </div>
+
+      <!-- Content -->
+      <div class="content">
+        <p><span class="label">Payment ID:</span> <%= transactionId %></p>
+        <p><span class="label">Amount Paid:</span> ৳ <%= totalAmount.toFixed(2) %></p>
+        <p><span class="label">Tour Title:</span> <%= tourTitle %></p>
+        <p><span class="label">Guest Count:</span> <%= guestCount %></p>
+        <p><span class="label">Booking Date:</span> <%= bookingDate.toDateString() %></p>
+
+        <p>✅ Thank you, <%= userName %>, for booking with us. We wish you a safe and pleasant journey! 🌍</p>
+
+        <div class="button-wrapper">
+          <a>📥 Download Invoice PDF</a>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="footer">
+        This is an automated email. For any queries, reach us at 
+        <a href="mailto:support@tourify.com">support@tourify.com</a>
+      </div>
+    </div>
+  </body>
+</html>

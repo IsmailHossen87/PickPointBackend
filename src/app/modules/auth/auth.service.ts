@@ -18,6 +18,9 @@ const getNewAccessToken = async (refreshToken: string) => {
    }
 }
 
+
+
+
 // 🔐 Change Password: Requires old password and new password
 const changePassword = async (oldPassword: string, newPassword: string, docodedToken: JwtPayload) => {
    const user = await User.findById(docodedToken.userId);
@@ -33,6 +36,10 @@ const changePassword = async (oldPassword: string, newPassword: string, docodedT
    user!.password = await bcryptjs.hash(newPassword, Number(envVars.BCRYPT_SALT_ROUTD));
    user!.save();
 }
+
+
+
+
 
 // 🔁 Reset Password from a reset link (token based)
 const resetPassword = async (payload: Record<string, any>, decodedToken: JwtPayload) => {
@@ -116,8 +123,8 @@ const forgotPassword = async (email: string) => {
 
 // 🔄 Export all Auth-related services
 export const AuthService = {
-   changePassword,
    getNewAccessToken,
+   changePassword,
    resetPassword,
    setPassword,
    forgotPassword

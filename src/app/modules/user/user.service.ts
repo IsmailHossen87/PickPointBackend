@@ -14,7 +14,7 @@ const createUser = async (payload: Partial<Iuser>) => {
     const { email, password, ...rest } = payload;
     const isUserExites = await User.findOne({ email })
     if (isUserExites) {
-        throw new AppError(httpStatus.BAD_REQUEST, "User Already Exit")     
+        throw new AppError(httpStatus.BAD_REQUEST, "User Already Exit")
     }
     //  for password
     const hashePassword = await bcryptjs.hash(password as string, Number(envVars.BCRYPT_SALT_ROUTD))
@@ -54,20 +54,31 @@ const getAllUsers = async (query: Record<string, string>) => {
 };
 
 // Updata user
-const updateUser = async (userId: string, payload: Partial<Iuser>, decodedToken: JwtPayload) => {
+const updateUser = async (userId: string, payload: Partial<Iuser>, decodedToken: JwtPayload) => { 
+    // last moment Check
+    if(decodedToken.role === Role.USER || decodedToken.role === Role.GUIDE){
+        if(userId !== decodedToken.userId){
+            throw new AppError(401,"You are not Authorized")
+        }
+    }
+
+
+
     const ifUserExit = await User.findById(userId)
     if (!ifUserExit) {
         throw new AppError(httpStatus.NOT_FOUND, "User Not Found")
     }
 
+    // last moment Check
+        if(decodedToken.role === Role.ADMIN && ifUserExit.role === Role.SUPER_ADMIN){
+               throw new AppError(401,"You are not Authorized")
+        }
+
+
 
     if (payload.role) {
         // সাধারণ ইউজার বা GUIDE যদি কারো role পরিবর্তন করতে চায়, বা নিজের role ADMIN বানাতে চায় — ❌ সেটা allow করা হবে না।
         if (decodedToken.role === Role.USER || decodedToken.role === Role.GUIDE) {
-            throw new AppError(httpStatus.FORBIDDEN, "You are not authorized")
-        }
-        //  ADMIN যদি আরেকজনকে SUPER_ADMIN করতে চায় — ❌ সেটাও allow না।
-        if (payload.role === Role.SUPER_ADMIN && decodedToken.role === Role.ADMIN) {
             throw new AppError(httpStatus.FORBIDDEN, "You are not authorized")
         }
     }
@@ -78,13 +89,15 @@ const updateUser = async (userId: string, payload: Partial<Iuser>, decodedToken:
             throw new AppError(httpStatus.FORBIDDEN, "You are not authorized")
         }
     }
+    
+    // ITS COMMENT ,because now change password API available
+    // if (payload.password) {
+    //     payload.password = await bcryptjs.hash(payload.password, envVars.BCRYPT_SALT_ROUTD)
+    // }
 
-    if (payload.password) {
-        payload.password = await bcryptjs.hash(payload.password, envVars.BCRYPT_SALT_ROUTD)
-    }
-    const newUpdateUser = await User.findByIdAndUpdate(userId, payload, { new: true, runValidators: true }) 
+    const newUpdateUser = await User.findByIdAndUpdate(userId, payload, { new: true, runValidators: true })
     // user Image check
-    if(payload.picture && ifUserExit.picture){
+    if (payload.picture && ifUserExit.picture) {
         await deleteImageFromCloudinary(ifUserExit.picture)
     }
     return newUpdateUser;
@@ -92,17 +105,17 @@ const updateUser = async (userId: string, payload: Partial<Iuser>, decodedToken:
 }
 
 // get me users
-const getMe = async (userId:string) => {
+const getMe = async (userId: string) => {
     const user = await User.findById(userId).select("-password")
     return {
         data: user
     }
 }
 // get single users
-const getSingleUser = async (id:string) => {
+const getSingleUser = async (id: string) => {
     const user = await User.findById(id).select("-password")
     return {
-        data: user  
+        data: user
     }
 }
-export const userService = { createUser,getAllUsers, updateUser ,getSingleUser,getMe}
+export const userService = { createUser, getAllUsers, updateUser, getSingleUser, getMe }

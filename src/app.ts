@@ -20,7 +20,11 @@ app.use(expressSession({
 app.use(cookieParser())
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))  // from data er jonno
-app.use(cors())
+app.use(cors({
+    origin:envVars.FRONTEND_URL,
+    credentials:true,
+     
+}))
 
 app.use(passport.initialize())
 app.use(passport.session())
