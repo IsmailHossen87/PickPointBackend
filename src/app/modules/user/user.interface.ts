@@ -31,8 +31,9 @@ export interface Iuser{
     role:Role;
     auths:IAuthProvider[];
     // Foreign key
-    bookings?:Types.ObjectId[]
-    guides?:Types.ObjectId[]
+    bookings?:Types.ObjectId[];
+    guides?:Types.ObjectId[];
+    createdAt?:Date
 
 }
 
