@@ -4,6 +4,7 @@ import { envVars } from "../../config/env";
 import { PaymentService } from "./payment.service";
 import { sendResponse } from "../../utils/sendReponse";
 import httpStatus from "http-status-codes"
+import { SSLService } from "../sslCommerz/sslCommerz.service";
 
 // future do payment
 const initPayment = catchAsync(async(req:Request,res:Response)=>{
@@ -55,5 +56,17 @@ const getInvoiceDownload = catchAsync(async(req:Request,res:Response)=>{
         data: result,
     });
 })
+// last e
+const validatePayment = catchAsync(async(req:Request,res:Response)=>{
+    const result = await SSLService.validatePayment(req.body)
 
-export const paymentControler ={successPayment,failPayment,cancelPayment,initPayment,getInvoiceDownload}
+    console.log("SSL COMMERCE IPN",req.body)
+      sendResponse(res, {
+        statusCode: 200,
+        success: true,
+        message: 'Payment Validated Sucessfully',
+        data: result,
+    });
+})
+
+export const paymentControler ={successPayment,failPayment,cancelPayment,initPayment,getInvoiceDownload,validatePayment}
