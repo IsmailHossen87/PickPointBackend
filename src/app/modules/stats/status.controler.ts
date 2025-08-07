@@ -31,7 +31,7 @@ const getBookingStatus = catchAsync(async (req: Request, res: Response) => {
     sendResponse(res, {
         statusCode: 200,
         success: true,
-        message: 'Invoice Download URL retrieved Sucessfully',
+        message: 'Booking retrieved Sucessfully',
         data: stats,
     });
 })
@@ -41,7 +41,7 @@ const getPaymentStatus = catchAsync(async (req: Request, res: Response) => {
     sendResponse(res, {
         statusCode: 200,
         success: true,
-        message: 'Invoice Download URL retrieved Sucessfully',
+        message: 'Payment retrieved Sucessfully',
         data: stats,
     });
 })
