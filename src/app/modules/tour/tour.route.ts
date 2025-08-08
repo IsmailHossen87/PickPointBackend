@@ -1,31 +1,43 @@
 import express from "express";
-import { checkAuth } from "../../middleware/checkAuth";
+import { multerUpload } from "../../config/multer.config";
+import { checkAuth } from "../../middlewares/checkAuth";
+import { validateRequest } from "../../middlewares/validateRequest";
 import { Role } from "../user/user.interface";
-import { validateRequest } from "../../middleware/validateRequest";
-import { TourController } from "./tour.controler";
-import { createTourTypeZodSchema, createTourZodSchema, updateTourZodSchema } from "./tour.validation";
-import { multerUpload } from "../../config/moduler.config";
+import { TourController } from "./tour.controller";
+import {
+    createTourTypeZodSchema,
+    createTourZodSchema,
+    updateTourZodSchema,
+} from "./tour.validation";
 
 const router = express.Router();
-// tour type 
+
+/* ------------------ TOUR TYPE ROUTES -------------------- */
+router.get("/tour-types", TourController.getAllTourTypes);
+
 router.post(
     "/create-tour-type",
     checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
     validateRequest(createTourTypeZodSchema),
     TourController.createTourType
 );
-router.get("/tour-types", TourController.getAllTourTypes);
+
+router.get(
+    "/tour-types/:id",
+    TourController.getSingleTourType
+);
 router.patch(
     "/tour-types/:id",
     checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
     validateRequest(createTourTypeZodSchema),
     TourController.updateTourType
 );
+
 router.delete("/tour-types/:id", checkAuth(Role.ADMIN, Role.SUPER_ADMIN), TourController.deleteTourType);
 
+/* --------------------- TOUR ROUTES ---------------------- */
+router.get("/", TourController.getAllTours);
 
-
-// tour
 router.post(
     "/create",
     checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
@@ -33,9 +45,11 @@ router.post(
     validateRequest(createTourZodSchema),
     TourController.createTour
 );
-// get allTour
-router.get("/", TourController.getAllTours);
-// updateTour
+
+router.get(
+    "/:slug",
+    TourController.getSingleTour
+);
 router.patch(
     "/:id",
     checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
@@ -43,15 +57,10 @@ router.patch(
     validateRequest(updateTourZodSchema),
     TourController.updateTour
 );
-// single Tour get
-router.get("/:slug",
-    checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
-    TourController.getSingleTour)
-router.delete(
-    "/:id",
-    checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
-    TourController.deleteTour
-);
+
+router.delete("/:id", checkAuth(Role.ADMIN, Role.SUPER_ADMIN), TourController.deleteTour);
+
+
 
 
 export const TourRoutes = router

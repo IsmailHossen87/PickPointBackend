@@ -1,35 +1,36 @@
 import { model, Schema } from "mongoose";
-import { IPament, PAYMENT_STATUS } from "./payment.interface";
+import { IPayment, PAYMENT_STATUS } from "./payment.interface";
 
-const PaymentSchema = new Schema<IPament>({
+
+const paymentSchema = new Schema<IPayment>({
     booking: {
         type: Schema.Types.ObjectId,
         ref: "Booking",
-        required:true
+        required: true,
+        unique: true,
     },
     transactionId: {
         type: String,
-        required:true,
-        unique:true
+        required: true,
+        unique: true,
+    },
+    status: {
+        type: String,
+        enum: Object.values(PAYMENT_STATUS),
+        default: PAYMENT_STATUS.UNPAID
     },
     amount: {
         type: Number,
-        required:true
+        required: true,
     },
-    status: {
-        type:String,
-        enum:Object.values(PAYMENT_STATUS),
-        default:PAYMENT_STATUS.UNPAIND
-    },
-     paymentGatewayData: {
-        type: Schema.Types.Mixed,
+    paymentGatewayData: {
+        type: Schema.Types.Mixed
     },
     invoiceUrl: {
         type: String
-    },
+    }
 }, {
-    versionKey: false,
     timestamps: true
 })
 
-export const Payment  = model<IPament>("Payment",PaymentSchema)
+export const Payment = model<IPayment>("Payment", paymentSchema)

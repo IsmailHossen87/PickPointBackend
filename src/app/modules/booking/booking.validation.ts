@@ -1,4 +1,4 @@
- import { z } from "zod";
+import { z } from "zod";
 import { BOOKING_STATUS } from "./booking.interface";
 
 export const createBookingZodSchema = z.object({

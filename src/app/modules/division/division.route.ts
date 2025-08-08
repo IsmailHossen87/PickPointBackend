@@ -1,37 +1,39 @@
 import { Router } from "express";
-import { checkAuth } from "../../middleware/checkAuth";
+import { multerUpload } from "../../config/multer.config";
+import { checkAuth } from "../../middlewares/checkAuth";
+import { validateRequest } from "../../middlewares/validateRequest";
 import { Role } from "../user/user.interface";
-import { DivisionController } from "./division.controler";
-import { validateRequest } from "../../middleware/validateRequest";
-import { createDivisionSchema } from "./division.validation";
-import { multerUpload } from "../../config/moduler.config";
+import { DivisionController } from "./division.controller";
+import {
+    createDivisionSchema,
+    updateDivisionSchema
+} from "./division.validation";
 
 const router = Router()
-// Post division
-router.post("/create",
-    checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
-    multerUpload.single("file"),  //for image upload
-    validateRequest(createDivisionSchema),
-    DivisionController.createDivision)
-// all division get
-router.get("/", DivisionController.getAllDivision)
+/*
+ {
 
-// single division get
-router.get("/:slug",
+ file : Image
+ data : body text data => req.body => req.body.data
+ }
+*/
+// Form data -> body, file
+router.post(
+    "/create",
     checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
-    DivisionController.getSingleDivision)
-// update
+    multerUpload.single("file"),
+    validateRequest(createDivisionSchema),
+    DivisionController.createDivision
+);
+router.get("/", DivisionController.getAllDivisions);
+router.get("/:slug", DivisionController.getSingleDivision)
 router.patch(
     "/:id",
     checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
-    multerUpload.single("file"),  //for image update
-    // validateRequest(updateDivisionSchema),
-    DivisionController.updatedDivision
+    multerUpload.single("file"),
+    validateRequest(updateDivisionSchema),
+    DivisionController.updateDivision
 );
-// delete
-router.delete("/:id",
-    checkAuth(Role.ADMIN, Role.SUPER_ADMIN),
-    DivisionController.deleteDivision);
+router.delete("/:id", checkAuth(Role.ADMIN, Role.SUPER_ADMIN), DivisionController.deleteDivision);
 
-
-export const DivisionRoute = router;
+export const DivisionRoutes = router
