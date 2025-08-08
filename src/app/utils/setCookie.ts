@@ -4,7 +4,7 @@ export interface AuthTokens {
     accessToken?: string,
     refreshToken?: string,
 }
-
+// setCookie
 export const setAuthCookie = (res: Response, tokenInfo: AuthTokens) => {
     if (tokenInfo.accessToken) {
         res.cookie("accessToken", tokenInfo.accessToken, {
