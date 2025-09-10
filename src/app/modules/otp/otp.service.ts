@@ -50,7 +50,6 @@ const sendOTP = async (email: string, name: string) => {
 const verifyOTP = async (email: string, otp: string) => {
     // const user = await User.findOne({ email, isVerified: false })
     const user = await User.findOne({ email })
-
     if (!user) {
         throw new AppError(404, "User not found")
     }

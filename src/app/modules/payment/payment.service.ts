@@ -16,7 +16,6 @@ import { Payment } from "./payment.model";
 
 
 const initPayment = async (bookingId: string) => {
-
     const payment = await Payment.findOne({ booking: bookingId })
 
     if (!payment) {

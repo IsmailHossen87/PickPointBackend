@@ -27,7 +27,7 @@ const startServer = async () => {
     await connectRedis()
     await startServer()
     await seedSuperAdmin()
-})()
+})()           //mendeotry
 
 process.on("SIGTERM", () => {
     console.log("SIGTERM signal recieved... Server shutting down..");

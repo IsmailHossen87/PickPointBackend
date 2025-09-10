@@ -18,7 +18,10 @@ cloudinary.config({
     api_secret: envVars.CLOUDINARY.CLOUDINARY_API_SECRET
 })
 
-export const uploadBufferToCloudinary = async (buffer: Buffer, fileName: string): Promise<UploadApiResponse | undefined> => {
+export const uploadBufferToCloudinary = async (buffer: Buffer, fileName: string): 
+
+
+Promise<UploadApiResponse | undefined> => {
     try {
         return new Promise((resolve, reject) => {
 
@@ -26,7 +29,7 @@ export const uploadBufferToCloudinary = async (buffer: Buffer, fileName: string)
 
             const bufferStream = new stream.PassThrough();
             bufferStream.end(buffer)
-
+            // Cloudinary এ Upload করা
             cloudinary.uploader.upload_stream(
                 {
                     resource_type: "auto",
@@ -40,8 +43,6 @@ export const uploadBufferToCloudinary = async (buffer: Buffer, fileName: string)
                     resolve(result)
                 }
             ).end(buffer)
-
-
         })
 
     } catch (error: any) {
@@ -57,8 +58,6 @@ export const deleteImageFromCLoudinary = async (url: string) => {
         const regex = /\/v\d+\/(.*?)\.(jpg|jpeg|png|gif|webp)$/i;
 
         const match = url.match(regex);
-
-        console.log({ match });
 
         if (match && match[1]) {
             const public_id = match[1];

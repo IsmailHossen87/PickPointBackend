@@ -18,31 +18,18 @@ const credentialsLogin = catchAsync(async (req: Request, res: Response, next: Ne
     passport.authenticate("local", async (err: any, user: any, info: any) => {
 
         if (err) {
-
-            // ❌❌❌❌❌
-            // throw new AppError(401, "Some error")
-            // next(err)
-            // return new AppError(401, err)
-
-
-            // ✅✅✅✅
-            // return next(err)
-            // console.log("from err");
-            return next(new AppError(401, err))
+            
+           return next(new AppError(401, err))
         }
 
         if (!user) {
-            // console.log("from !user");
-            // return new AppError(401, info.message)
             return next(new AppError(401, info.message))
         }
 
         const userTokens = await createUserTokens(user)
 
         // delete user.toObject().password
-
         const { password: pass, ...rest } = user.toObject()
-
 
         setAuthCookie(res, userTokens)
 
@@ -72,6 +59,8 @@ const credentialsLogin = catchAsync(async (req: Request, res: Response, next: Ne
 
 
 })
+
+
 const getNewAccessToken = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const refreshToken = req.cookies.refreshToken;
     if (!refreshToken) {
@@ -93,6 +82,7 @@ const getNewAccessToken = catchAsync(async (req: Request, res: Response, next: N
         data: tokenInfo,
     })
 })
+
 const logout = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
     res.clearCookie("accessToken", {
@@ -113,6 +103,7 @@ const logout = catchAsync(async (req: Request, res: Response, next: NextFunction
         data: null,
     })
 })
+
 const changePassword = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
     const newPassword = req.body.newPassword;
@@ -169,6 +160,7 @@ const forgotPassword = catchAsync(async (req: Request, res: Response, next: Next
         data: null,
     })
 })
+
 const googleCallbackController = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
 
     let redirectTo = req.query.state ? req.query.state as string : ""
@@ -177,7 +169,7 @@ const googleCallbackController = catchAsync(async (req: Request, res: Response, 
         redirectTo = redirectTo.slice(1)
     }
 
-    // /booking => booking , => "/" => ""
+    // /booking => booking , => "/" => ""     stape-1
     const user = req.user;
 
     if (!user) {
@@ -202,9 +194,9 @@ export const AuthControllers = {
     credentialsLogin,
     getNewAccessToken,
     logout,
-    resetPassword,
-    setPassword,
-    forgotPassword,
     changePassword,
+    setPassword,
+    resetPassword,
+    forgotPassword,
     googleCallbackController
 }

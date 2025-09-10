@@ -3,6 +3,7 @@ import { IDivision } from "./division.interface";
 
 
 const divisionSchema = new Schema<IDivision>({
+    country: { type: String, required: true },
     name: { type: String, required: true, unique: true },
     slug: { type: String, unique: true },
     thumbnail: { type: String },

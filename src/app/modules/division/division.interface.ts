@@ -1,5 +1,6 @@
 export interface IDivision {
     name: string;
+    country: string;
     slug: string;
     thumbnail?: string;
     description?: string

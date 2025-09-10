@@ -5,6 +5,6 @@ type AsyncHandler = (req: Request, res: Response, next: NextFunction) => Promise
 
 export const catchAsync = (fn: AsyncHandler) => (req: Request, res: Response, next: NextFunction) => {
     Promise.resolve(fn(req, res, next)).catch((err: any) => {
-        next(err)
+        next(err)    //Global Error Handler er kase jabe
     })
 }

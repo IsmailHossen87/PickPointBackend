@@ -136,32 +136,26 @@ const updateTour = async (id: string, payload: Partial<ITour>) => {
         throw new Error("Tour not found.");
     }
 
-    // if (payload.title) {
-    //     const baseSlug = payload.title.toLowerCase().split(" ").join("-")
-    //     let slug = `${baseSlug}`
+    // নতুন image যোগ করতে পারবে ✅
 
-    //     let counter = 0;
-    //     while (await Tour.exists({ slug })) {
-    //         slug = `${slug}-${counter++}` // dhaka-division-2
-    //     }
-
-    //     payload.slug = slug
-    // }
+    // Delete করলে Cloudinary থেকেও image delete হবে ✅
 
     if (payload.images && payload.images.length > 0 && existingTour.images && existingTour.images.length > 0) {
         payload.images = [...payload.images, ...existingTour.images]
     }
-
+    // পুরোনো image delete করতে পারবে ✅
     if (payload.deleteImages && payload.deleteImages.length > 0 && existingTour.images && existingTour.images.length > 0) {
 
+        // যেগুলো mess করে সেগুলো বাদ দিয়ে ,যেগুলো mess করে না সেগুলো আলাদা করব
         const restDBImages = existingTour.images.filter(imageUrl => !payload.deleteImages?.includes(imageUrl))
 
+        // updatedPayloadImages = নতুন images যেগুলো delete list এ নাই এবং পুরোনো images এর সাথে duplicate না।
         const updatedPayloadImages = (payload.images || [])
-            .filter(imageUrl => !payload.deleteImages?.includes(imageUrl))
-            .filter(imageUrl => !restDBImages.includes(imageUrl))
+            .filter(imageUrl => !payload.deleteImages?.includes(imageUrl)) //যেসব image deleteImages লিস্টে আছে, সেগুলো বাদ দিচ্ছি।
+            .filter(imageUrl => !restDBImages.includes(imageUrl)) //image আগেই DB-তে আছে segulo bad dissi
 
+        // Final image list = পুরোনো থেকে বেঁচে যাওয়া + নতুন যোগ হওয়া।
         payload.images = [...restDBImages, ...updatedPayloadImages]
-
 
     }
 
@@ -177,13 +171,13 @@ const deleteTour = async (id: string) => {
     return await Tour.findByIdAndDelete(id);
 };
 const createTourType = async (payload: ITourType) => {
-    const existingTourType = await TourType.findOne({ name: payload.name });
+    const existingTourType = await TourType.findOne({ name: payload });
 
     if (existingTourType) {
         throw new Error("Tour type already exists.");
     }
 
-    return await TourType.create({ name });
+    return await TourType.create({ name:payload });
 };
 const getAllTourTypes = async (query: Record<string, string>) => {
     const queryBuilder = new QueryBuilder(TourType.find(), query)
