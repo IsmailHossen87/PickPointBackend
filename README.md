@@ -128,15 +128,6 @@ cd PickPointBackend
 npm install
 ```
 
-### 3️⃣ Setup Environment Variables (`.env`)
-```env
-PORT=5000
-MONGO_URI=your_mongo_connection_string
-FRONTEND_URL=http://localhost:5173
-EXPRESS_SESSION_SECRET=your_secret
-JWT_SECRET=your_jwt_secret
-```
-
 ### 4️⃣ Run in Dev mode
 ```bash
 npm run dev
